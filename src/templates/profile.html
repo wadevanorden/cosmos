@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>Achievement Diary</title>
+        {{ fontawesome_html() }}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='profile.css') }}">
+        <script src="{{url_for('static', filename='profile.js')}}"></script>
+    </head>
+    <body>
+        <div class=header>
+            <div id=logo></div>
+            <div class=title>Achievement Diary</div>
+            <div class=tabs>
+                <a class=tab href="/achievements"><i class="fas fa-book" fa-5x></i>-Achievements</a>
+                <a class=tab href="/collections"><i class="fas fa-balance-scale"></i>-Collections</a>
+                <a class=tab href="/platforms"><i class="fas fa-briefcase"></i>-Platforms</a>
+                <a class="tab active" href="/profile"><i class="fas fa-user-cog"></i>-Profile</a>
+            </div>
+        </div>
+        <div class=page>
+            <i class="fas fa-bookmark"></i><i class="fas fa-bookmark" id=bookmark_shadow></i>
+            <div class=profile_content>
+                {% if user_avatar == null %}
+                    <img class=profile_image src="../static/avatars/default.jpg" alt="User Avatar">
+                {% else %}
+                    <img class=profile_image src="{{ user_avatar }}" alt="User Avatar">
+                {% endif %}
+                <a id=select_avatar onclick="open_popup()">Select Avatar</a>
+                <div id=myModal class=modal>
+                    <div class=modal-content>
+                        <span class=close onclick="close_hide()">Close</span>
+                        <form method="POST" action="update_avatar">
+                            {% for avatar in avatars %}
+                                <input type="image" formaction="update_avatar" class=avatars src="{{ avatar }}">
+                            {% endfor %}
+                        </form>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        
+    </body>
+</html>

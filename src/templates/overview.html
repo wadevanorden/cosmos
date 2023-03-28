@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <title>The Achievement Diary</title>
+        {{ fontawesome_html() }}
+        <script src="{{url_for('static', filename='js/overview.js')}}"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/base.css') }}">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='logo/favicon.ico') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=PT+Serif&display=swap" rel="stylesheet">
+    </head>
+    <body onload="getTaskStatus('{{ tasks }}')">
+        {% if not authenticated %}
+            <div class="warning_message">
+                <h3 class=warning_message_text>Login for personalized game and achievement information</h3>
+            </div>
+        {% endif %}
+        {% if game_data | length == 0 %}
+            <div class="warning_message">
+                <h3 class=warning_message_text>Connect your account with a platform to view your game data</h3>
+            </div>
+        {% endif %}
+        <div id=header class=header>
+            <div>
+                <ul class=navbar>
+                    <img class=logo src="../static/logo/Achievement_Diaries.png">
+                    <li class=title><a href="/overview">The Achievement Diary</a></li>
+                    <li id=active class=nav><a href="/overview">Overview</a></li>
+                    <li class=nav><a href="/achievements">Achievements</a></li>
+                    <li class=nav><a href="/collections">Collections</a></li>
+                    <li class=nav><a href="/platforms">Platforms</a></li>
+                    {% if authenticated%}
+                        <li class=right_nav id=nav_log><a href="/logout">Logout</a></li>
+                        <li class=right_nav><a href="/profile">Profile</a></li>
+                    {% else %}
+                        <li class=right_nav id=nav_log><a href="/login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div>
+                <br><br><br><br><br><br><br>
+            </div>
+            <div><h1 class=title_message>Welcome to The Achievement Diary</h1></div>
+            <div><h2 class=title_message>Track your achievements accross multiple <br> platforms and games</h2></div>
+        {% if tasks | length != 2 %}
+            <div class=syncing_message>Syncing Game Details <i class="fas fa-sync"></i></div>
+        {% endif %}
+        </div>
+        <div id=filters_dropdown class=filters>
+            <div class=checkbox_filter_grid>
+                <h3 class=checkbox_filter_title >Narrow by Game Detail</h3>
+                <label class=checkbox_filters>
+                    <input class=checkbox type="checkbox" id=no_achievements_filter onclick="filter_checkbox(this)">Hide items with no achievements
+                </label>
+                <label class=checkbox_filters>
+                    <input class=checkbox type="checkbox" id=perfect_game_filter onclick="filter_checkbox(this)">Hide perfect items
+                </label>
+                <label class=checkbox_filters>
+                    <input class=checkbox type="checkbox" id=regular_game_filter onclick="filter_checkbox(this)">Hide items you haven't perfected
+                </label>
+            </div>
+            <div class=checkbox_filter_grid_platform>
+                <h3 class=checkbox_filter_title_platform >Narrow by Platform</h3><div></div>
+                <label class=checkbox_filters>
+                    <input class=checkbox type="checkbox" id=steam_filter onclick="filter_checkbox(this)">Hide Steam games
+                </label>
+                <label class=checkbox_filters>
+                    <input class=checkbox type="checkbox" id=xbox_filter onclick="filter_checkbox(this)">Hide Xbox games
+                </label>
+                <label class=checkbox_filters>
+                    <input class=checkbox type="checkbox" id=playstation_filter onclick="filter_checkbox(this)">Hide Playstation games
+                </label>
+            </div>
+        </div>
+        <button id=filters_dropdown_close class=filters_button onclick="filter_dropdown_close()">
+            <i class="fas fa-filter fa-2x"></i><i class="fas fa-chevron-up fa-1x"></i>
+        </button>
+        <button id=filters_dropdown_open class=filters_button onclick="filter_dropdown_open()">
+            <i class="fas fa-filter fa-2x"></i><i class="fas fa-chevron-down fa-1x"></i>
+        </button>
+        {% if authenticated %}
+            <div class=game_grid>
+                {% for game in game_data %}
+                    {% for key, value in game.items() %}
+                    <div class=card>
+                        <a href="/overview/{{ key }}">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <div class="card_alt_image steam">
+                                        <img id=card_blur_image_{{ loop.index0 }}  class=card_blur_image src="{{ value['alt_art'] }}">
+                                        <img id=card_alt_image_{{ loop.index0 }}  class=card_banner_image src="{{ value['alt_art'] }}">
+                                    </div>
+                                    {% if value['source'] == 'steam'%}
+                                        {% if value['achievements']['total_achieved'] == value['values'] | length and value['values'] | length != 0 %}
+                                            <img id=card_image_{{ loop.index0 }} class="card_image_steam steam perfect" src="{{ value['art'] }}" onerror="this.style.display='none'; this.parentElement.querySelector('.card_alt_image').style.display='flex'">
+                                        {% elif  value['values'] | length == 0 %}
+                                            <img id=card_image_{{ loop.index0 }} class="card_image_steam steam no_achievements" src="{{ value['art'] }}" onerror="this.style.display='none'; this.parentElement.querySelector('.card_alt_image').style.display='flex'">
+                                        {% else %}
+                                            <img id=card_image_{{ loop.index0 }} class="card_image_steam steam regular" src="{{ value['art'] }}" onerror="this.style.display='none'; this.parentElement.querySelector('.card_alt_image').style.display='flex'">
+                                        {% endif %}
+                                    {% elif value['source'] == 'xbox'%}
+                                    <img id=card_image_{{ loop.index0 }} class=card_image_xbox src="{{ value['art'] }}" onerror="this.style.display='none'; this.parentElement.querySelector('.card_alt_image').style.display='flex'">
+                                    {% endif %}
+                                </div>
+                                <div class="card-back">
+                                    <h3>{{ value['name'] }}</h3>
+                                    <h4>Platform - {{ value['source']|capitalize }} Achievements - {{ value['values'] | length }} Earned - {{ value['achievements']['total_achieved'] }} </h4>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </body>
+    <script>
+        var filter_dropdown = document.getElementById("filters_dropdown");
+        var button_open = document.getElementById("filters_dropdown_open");
+        var button_close = document.getElementById("filters_dropdown_close");
+        filter_dropdown.classList.add("hideFilter");
+        filter_dropdown.style.paddingBottom = '0%';
+        button_open.style.display = 'block';
+        button_close.style.display = 'none';
+        filter_dropdown.style.borderTop = '0px solid black';
+    </script>
+</html>

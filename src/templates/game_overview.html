@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <title>The Achievement Diary</title>
+        {{ fontawesome_html() }}
+        <script src="{{url_for('static', filename='js/overview.js')}}"></script>
+        <link rel="stylesheet" href="{{url_for('static', filename = 'fontawesome/css/all.css')}}" type="text/css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/base.css') }}">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='logo/favicon.ico') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=PT+Serif&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        {% if not authenticated %}
+            <div class="warning_message">
+                <h3 class=warning_message_text>Login to retrieve personalized game information</h3>
+            </div>
+        {% endif %}
+        <div class=header>
+            {% if game_data['alt_art']  %}
+                <img class=banner_img src="{{ game_data['alt_art'] }}" onload="this.parentElement.style.background='black'">
+            {% endif %}
+            <div>
+                <ul class=navbar>
+                    <img class=logo src="../../static/logo/Achievement_Diaries.png">
+                    <li class=title><a href="/overview">The Achievement Diary</a></li>
+                    <li class=nav><a href="/overview">Overview</a></li>
+                    <li class="nav achievements"><a href="/achievements">Achievements</a></li>
+                    <li class=nav><a href="/collections">Collections</a></li>
+                    <li class=nav><a href="/platforms">Platforms</a></li>
+                    {% if authenticated%}
+                        <li class=right_nav id=nav_log><a href="/logout">Logout</a></li>
+                        <li class=right_nav><a href="/profile">Profile</a></li>
+                    {% else %}
+                        <li class=right_nav id=nav_log><a href="/login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div>
+                <br><br><br><br><br><br><br>
+            </div>
+            <div>
+                {% if game_data['game_stats']['perfect_game'] == 1 %}
+                    <div class="title_alt_image" style="box-shadow: 0px 0px 20px 1px gold;">
+                        <img class= title_blur_image src="{{ game_data['alt_art'] }}">
+                        <img class=title_banner_image src="{{ game_data['alt_art'] }}">
+                    </div>
+                {% else %}
+                    <div class="title_alt_image">
+                        <img class= title_blur_image src="{{ game_data['alt_art'] }}">
+                        <img class=title_banner_image src="{{ game_data['alt_art'] }}">
+                    </div>
+                {% endif %}
+                <img class="title_img_{{ game_data['game_stats']['perfect_game'] }}" src="{{ game_data['art'] }}" onerror="this.style.display='none'; this.parentElement.querySelector('.title_alt_image').style.display='flex'">
+            </div>
+            <div><h1 class=title_message_game>{{ game_data['game_name'] }}</h1></div>
+            {% if authenticated %}
+                <div><h2 class=title_message_game>Achievements: {{ game_data['game_stats']['achievements']|length }}</h2></div>
+                {% if game_data['game_stats']['perfect_game'] == 1 %}
+                    <div><h2 class=title_message_game>Perfect: Yes</h2></div>
+                {% else %}
+                    <div><h2 class=title_message_game>Perfect: No</h2></div>
+                {% endif %}
+                    {% if game_data['game_stats']['achievements']|length > 0 %}
+                        {% set percent = game_data['game_stats']['achievements_achieved']/game_data['game_stats']['achievements']|length * 100 %}
+                        <div><h2 class=title_message_game>Complete: {{'%0.2f' % percent|float}}%</h2></div>
+                    {% else %}
+                        <div><h2 class=title_message_game>Complete: 100%</h2></div>
+                    {% endif %}
+            {% else %}
+                <div><h2 class=title_message_game>Achievements: {{ game_data['game_stats']['achievements']|length }}</h2></div>
+            {% endif %}
+        </div>
+        <div id=filters_dropdown class=filters>
+        </div>
+        <button id=filters_dropdown_close class=filters_button onclick="filter_dropdown_close()">
+            <i class="fas fa-filter fa-2x"></i><i class="fas fa-chevron-up fa-1x"></i>
+        </button>
+        <button id=filters_dropdown_open class=filters_button onclick="filter_dropdown_open()">
+            <i class="fas fa-filter fa-2x"></i><i class="fas fa-chevron-down fa-1x"></i>
+        </button>
+        {% if authenticated %}
+            <div class="achievement_grid">
+                {% for achievement in game_data['game_stats']['achievements'] %}
+                    <div class="achievement_{{ achievement['achieved']}}">
+                        {% if achievement['hidden'] == -1 and achievement['achieved'] == 0 %}
+                            <div class=hidden><i class="fas fa-lock fa-5x"></i></div>
+                            <div class=icon_background_hidden style="display: none;"><span class=helper></span><img class="achievement_icon_hidden" src="{{ achievement['icon'] }}"></div>
+                            <div><h3 class=achievement_title style="display: none;">{{ achievement['name'] }}</h3></div>
+                            <div><h4 class=achievement_description style="display: none;">{{ achievement['description'] }}</h4></div>
+                        {% else %}
+                            <div class=icon_background><span class=helper></span><img class="achievement_icon" src="{{ achievement['icon'] }}"></div>
+                            <div><h3 class=achievement_title>{{ achievement['name'] }}</h3></div>
+                            <div><h4 class=achievement_description>{{ achievement['description'] }}</h4></div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </body>
+    <script>
+        var filter_dropdown = document.getElementById("filters_dropdown");
+        var button_open = document.getElementById("filters_dropdown_open");
+        var button_close = document.getElementById("filters_dropdown_close");
+        filter_dropdown.classList.add("hideFilter");
+        filter_dropdown.style.paddingBottom = '0%';
+        button_open.style.display = 'block';
+        button_close.style.display = 'none';
+        filter_dropdown.style.borderTop = '0px solid black';
+    </script>
+</html>

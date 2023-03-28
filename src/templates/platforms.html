@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>The Achievement Diary</title>
+        {{ fontawesome_html() }}
+        <script src="{{url_for('static', filename='js/overview.js')}}"></script>
+        <link rel="stylesheet" href="{{url_for('static', filename = 'fontawesome/css/all.css')}}" type="text/css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/base.css') }}">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='logo/favicon.ico') }}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=PT+Serif&display=swap" rel="stylesheet">
+    </head>
+    <body onload="show_connections()">
+        {% if not authenticated %}
+            <div class="warning_message">
+                <h3 class=warning_message_text>Login to connect your account with these platforms</h3>
+            </div>
+        {% endif %}
+        <div class=header>
+            <div>
+                <ul class=navbar>
+                    <img class=logo src="../../static/logo/Achievement_Diaries.png">
+                    <li class=title><a href="/">The Achievement Diary</a></li>
+                    <li class=nav><a href="/overview">Overview</a></li>
+                    <li class="nav achievements"><a href="/achievements">Achievements</a></li>
+                    <li class=nav><a href="/collections">Collections</a></li>
+                    <li class=nav><a href="/platforms">Platforms</a></li>
+                    {% if authenticated%}
+                        <li class=right_nav id=nav_log><a href="/logout">Logout</a></li>
+                        <li class=right_nav><a href="/profile">Profile</a></li>
+                    {% else %}
+                        <li class=right_nav id=nav_log><a href="/login">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div>
+                <br><br><br><br><br><br><br>
+            </div>
+            <div><h1 class=title_message>Platforms</h1></div>
+            <div><h2 class=title_message>Connect your account to platforms to get insight <br> into your achievements and game progress</h2></div>
+        </div>
+        <div class="platform_grid">
+            <div class=platform_icon>
+                <a onclick="open_popup('steam')">
+                    <i id=steam class="platform_image fab fa-steam fa-5x"></i>
+                </a>
+                <div id=connect_platform_modal_steam class=modal>
+                    <div id=connect_platform_modal_steam class=modal_content>
+                        <span class=close>
+                            <p onclick="close_hide('steam')">&#10006</p>
+                        </span>
+                        <div><h3 class=platform_modal_title>Connect your account with Steam</h3></div>
+                        <a class=platform_list href="/steam_auth">
+                            <img class=platform_image src="https://community.akamai.steamstatic.com/public/images/signinthroughsteam/sits_01.png" alt="Steam">
+                        </a>
+                        <div>
+                            <br><br>
+                        </div>
+                        <div><h6 class=platform_modal_title>Gain access to personalized achievement and game details within your steam account. Authorizes the use and retention of your steam id to retrieve aforementioned data.</h6></div>
+                    </div>
+                </div>
+            </div>
+            <div class=platform_icon>
+                <a onclick="open_popup('xbox')">
+                    <i id=xbox class="platform_image fab fa-xbox fa-5x"></i>
+                </a>
+                <div id=connect_platform_modal_xbox class=modal>
+                    <div id=connect_platform_modal_xbox class=modal_content>
+                        <span class=close>
+                            <p onclick="close_hide('xbox')">&#10006</p>
+                        </span>
+                        <div><h3 class=platform_modal_title>Connect your account with Microsoft Xbox</h3></div>
+                        <a class=platform_list href="/xbox_auth">
+                            <button class=platform_button>Sign in</button>
+                        </a>
+                        <div>
+                            <br><br>
+                        </div>
+                        <div><h6 class=platform_modal_title>Gain access to personalized achievement and game details within your Microsoft-Xbox account. Authorizes the use and retention of your xbox live and xbox-360 data.</h6></div>
+                    </div>
+                </div>
+            </div>
+            <div class=platform_icon>
+                <a onclick="open_popup('playstation')">
+                    <i id=playstation class="platform_image fab fa-playstation fa-5x"></i>
+                </a>
+                <div id=connect_platform_modal_playstation class=modal>
+                    <div id=connect_platform_modal_playstation class=modal_content>
+                        <span class=close>
+                            <p onclick="close_hide('playstation')">&#10006</p>
+                        </span>
+                        <div><h3 class=platform_modal_title>Connect your account with Sony Playstation</h3></div>
+                        <a class=platform_list href=#>
+                            <button class=platform_button>Sign in</button>
+                        </a>
+                        <div>
+                            <br><br>
+                        </div>
+                        <div><h6 class=platform_modal_title>Gain access to personalized achievement and game details within your Sony-Playstation account. Authorizes the use and retention of your playstation data.</h6></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        var modal = document.getElementById("connect_platform_modal");
+        modal.classList.add("hideModal");
+    </script>
+    <script type="text/javascript">
+        myVar = update_connected_platforms({{connections|tojson}})
+    </script>
+</html>
