@@ -1,13 +1,14 @@
 from flask import Flask
 
 app = Flask(__name__)
-app.secret_key = 'secret'
 
 
 @app.route("/")
 def overview():
     return "hello world"
 
+if __name__ == "__main__":
+    app.run()
 
 
 '''''''''
@@ -42,5 +43,3 @@ def steam_authorize():
     return redirect(url_for('overview'))
 '''''''''
 
-if __name__ == "__main__":
-    app.run()
