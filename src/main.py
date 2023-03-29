@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mysqldb import MySQL
 import MySQLdb as mysqlDB
+import os
 from urllib.parse import urlencode
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -8,6 +9,7 @@ app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 mysql = MySQL(app)
+print(os.getenv('mysql-dev-password'))
 
 @app.route("/")
 def index():
