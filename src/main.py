@@ -55,8 +55,8 @@ def signup():
         else:
             user_id = random.getrandbits(64)
             username = request.form['username']
-            first_name = request.form['first_name']
-            last_name = request.form['last_name']
+            first_name = request.form['first-name']
+            last_name = request.form['last-name']
             password = generate_password_hash(request.form['password'])
             cursor.execute('INSERT INTO Users VALUES (%s, %s, %s, %s, %s, %s, NULL, %s)', 
                            (user_id, first_name, last_name, email, username, password, True))
