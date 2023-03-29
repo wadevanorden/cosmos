@@ -1,12 +1,45 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, session, url_for
+from flask_mysqldb import MySQL
+import MySQLdb.cursors
 from urllib.parse import urlencode
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.config.from_pyfile('config.py')
 
+mysql = MySQL(app)
 
 @app.route("/")
-def overview():
+def index():
     return render_template('index.html')
+
+
+@app.route("/account")
+def account():
+    return render_template('account.html')
+
+
+@app.route("/login", methods = ['POST', 'GET'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    if request.method == 'POST':
+        email = request.form.get('email')
+        cursor = MySQL.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM users WHERE email = % s', (email))
+        users = cursor.fetchall()
+        for user in users:
+            if not check_password_hash(user['password'], request.form.get('password')):
+                continue
+            else:
+                session['loggedin'] = True
+                session['id'] = user['user_id']
+                return redirect(url_for('index'))
+
+    return render_template('login.html')
+
+
+
 
 @app.route("/steam_auth")
 def auth_with_steam():

@@ -53,20 +53,6 @@ header {
   font-weight: 500;
   font-size: 20px;
 }
-.header-nav > button{
-  margin-left: 0%;
-  background: transparent;
-  border: none;
-  font-weight: 500;
-  font-size: 20px;
-  color: #FFFFFF;
-  font-family: 'Kanit';
-  font-style: normal;
-  width: fit-content;
-}
-.header-nav > button:hover {
-  cursor: pointer;
-}
 .account {
   display: flex;
   font-weight: 500;
@@ -76,23 +62,82 @@ header {
   text-align: center;
   align-items: center;
 }
+.account > a {
+  font-weight: 500;
+  font-size: 20px;
+  color: #FFFFFF;
+  font-family: 'Kanit';
+  text-decoration: none;
+}
 
 main {
   position: relative;
-  display: grid;
-  grid-template-columns: auto auto auto auto auto auto auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   top: 80px;
-  margin-right: 5%;
-  margin-left: 5%;
   padding: 1%;
   max-width: 100%;
+}
+.cards-container {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto auto;
+  margin-right: 5%;
+  margin-left: 5%;
   gap: 5%;
   background: #302C3A;
 }
-main > button {
+.cards-container > button {
   display: block;
   background: url("default-card.png") transparent;
   background-repeat: no-repeat;
   background-size: auto;
   border: none;
+}
+
+
+.login-module {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #302C3A;
+  padding: 2%;
+  background: #302C3A;
+  border: 1px solid #FFFFFF;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+.login-title {
+  font-weight: 500;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+.input-text {
+  background: #FFFFFF;
+  border-radius: 5px;
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 27px;
+  display: flex;
+  align-items: center;
+  color: #000000;
+}
+
+.primary-button {
+  background: #53375D;
+  border-radius: 5px;
+  padding-right: 5%;
+  padding-left: 5%;
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  margin-left: 35%;
+  text-align: center;
+  color: #FFFFFF;
 }
