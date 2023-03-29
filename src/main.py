@@ -21,8 +21,8 @@ def auth_with_steam():
         'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
         'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
         'openid.mode': 'checkid_setup',
-        'openid.return_to': 'http://127.0.0.1:5000/steam_authorized',
-        'openid.realm': 'http://127.0.0.1:5000'
+        'openid.return_to': 'http://cosmos-alb-1623670014.us-east-1.elb.amazonaws.com/steam_authorized',
+        'openid.realm': 'http://cosmos-alb-1623670014.us-east-1.elb.amazonaws.com/'
     }
     query_string = urlencode(params)
     steam_openid_url = 'https://steamcommunity.com/openid/login'
