@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mysqldb import MySQL
 import MySQLdb as mysqlDB
-import os
+import random
 from urllib.parse import urlencode
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -36,10 +36,33 @@ def login():
                 session['loggedin'] = True
                 session['id'] = user['user_id']
                 return redirect(url_for('index'))
+        return render_template('login.html')
 
-    return render_template('login.html')
 
-
+@app.route("/signup", methods = ['POST', 'GET'])
+def signup():
+    error_msg = ""
+    if request.method == 'GET':
+        return render_template('signup.html')
+    if request.method == 'POST':
+        email = request.form['email']
+        cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
+        cursor.execute('SELECT * FROM Users WHERE email = %s', [email])
+        user = cursor.fetchone()
+        if user:
+            error_msg = "User exists with that email"
+            return render_template('signup.html')
+        else:
+            user_id = random.getrandbits(64)
+            username = request.form['username']
+            first_name = request.form['first_name']
+            last_name = request.form['last_name']
+            password = generate_password_hash(request.form['password'])
+            cursor.execute('INSERT INTO Users VALUES (%s, %s, %s, %s, %s, %s, NULL, %s)', 
+                           (user_id, first_name, last_name, email, username, password, True))
+            mysql.connection.commit()
+            return redirect(url_for('login'))
+            
 
 
 @app.route("/steam_auth")
