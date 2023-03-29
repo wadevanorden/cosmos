@@ -8,9 +8,30 @@
 </head>
 <body>
 	<header>
+		<div class="title-grid">
+			<span class="title">Cosmos</span>
+			<span class="subtitle">Achievement Codex</span>
+		</div>
+		<div>
+			<ol class="header-nav">
+				<button>Achievements Dashboard</button>
+				<button>The HUB</button>
+				<button>Leaderboards</button>
+				<button>Forums</button>
+			</ol>
+		</div>
+		<div class="account">
+			{% if authenticated %}
+				<span>Account</span>
+			{% else %}
+				<span>Login/Sign Up</span>
+			{% endif %}
+		</div>
 	</header>
 	<main>
-		
+		{% for i in range(5) %}
+			<button></button>
+		{% endfor %}
 	</main>
 	<footer>
 	</footer>
