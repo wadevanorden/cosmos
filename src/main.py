@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mysqldb import MySQL
-import MySQLdb.cursors
+import MySQLdb as mysqlDB
 from urllib.parse import urlencode
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -25,7 +25,7 @@ def login():
         return render_template('login.html')
     if request.method == 'POST':
         email = request.form.get('email')
-        cursor = MySQL.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor = MySQL.connection.cursor(mysqlDB.cursors.DictCursor)
         cursor.execute('SELECT * FROM users WHERE email = % s', (email))
         users = cursor.fetchall()
         for user in users:
