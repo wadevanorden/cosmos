@@ -25,8 +25,7 @@ def login():
         return render_template('login.html')
     if request.method == 'POST':
         email = request.form.get('email')
-        print(MySQL.connection)
-        cursor = MySQL.connection.cursor(mysqlDB.cursors.DictCursor)
+        cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
         cursor.execute('SELECT * FROM users WHERE email = % s', (email))
         users = cursor.fetchall()
         for user in users:
