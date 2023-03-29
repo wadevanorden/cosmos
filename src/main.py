@@ -57,12 +57,19 @@ def signup():
             username = request.form['username']
             first_name = request.form['first-name']
             last_name = request.form['last-name']
+            enabled = True
             password = generate_password_hash(request.form['password'])
-            cursor.execute('INSERT INTO Users VALUES (%s, %s, %s, %s, %s, %s, NULL, %s)', 
-                           (user_id, first_name, last_name, email, username, password, True))
+            cursor.execute('INSERT INTO Users (user_id,first_name,last_name,email,username,password,enabled) VALUES (%s, %s, %s, %s, %s, %s, %s)', 
+                           (user_id, first_name, last_name, email, username, password, enabled))
             mysql.connection.commit()
             return redirect(url_for('login'))
-            
+
+
+@app.route('/logout')
+def logout():
+   session.pop('loggedin', None)
+   session.pop('id', None)
+   return redirect(url_for('login'))
 
 
 @app.route("/steam_auth")
