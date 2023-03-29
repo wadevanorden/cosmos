@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def overview():
-    return render_template('login.html')
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
