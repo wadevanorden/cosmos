@@ -131,8 +131,7 @@ def steam_authorize():
                     input_apps.append(connection_mapping['app_id'])
                 else:
                     new_app_id = random.getrandbits(64)
-                    cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', 
-                           [new_app_id, app['appid']])
+                    cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', [new_app_id, app['appid']])
                     mysql.connection.commit()
                     input_apps.append(new_app_id)
             for app_id in input_apps:
