@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mysqldb import MySQL
 import MySQLdb as mysqlDB
 import random
+import requests
+import os
 from urllib.parse import urlencode
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -113,6 +115,40 @@ def steam_authorize():
         cursor.execute('INSERT INTO Connections (user_id,steam_id) VALUES (%s, %s)', 
                            (session['id'], steam_id))
         mysql.connection.commit()
+    
+    api_key = os.getenv('STEAM_API_KEY')
+    url = f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&format=json'
+    try:
+        response = requests.get(url).json()
+        if len(response['response']['games']) == 0:
+            redirect(url_for('account'))
+        else:
+            input_apps = list()
+            for app in response['response']['games']:
+                cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
+                connection_mapping = cursor.fetchone()
+                if connection_mapping:
+                    input_apps.append(connection_mapping['app_id'])
+                else:
+                    new_app_id = random.getrandbits(64)
+                    cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', 
+                           (new_app_id, app['appid']))
+                    mysql.connection.commit()
+                    input_apps.append(new_app_id)
+            for app_id in input_apps:
+                cursor.execute('SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
+                user_app = cursor.fetchone()
+                if user_app:
+                    continue
+                else:
+                    cursor.execute('INSERT INTO User_Apps (user_id,app_id) VALUES (%s, %s)', 
+                           (session['id'], app_id))
+                    mysql.connection.commit()
+            redirect(url_for('account'))
+    except:
+        redirect(url_for('index'))
+    
+
     return redirect(url_for('account'))
 
 if __name__ == "__main__":
