@@ -102,7 +102,17 @@ def steam_authorize():
     steam_id = {
         'steam_id': request.args.get('openid.claimed_id').split('/')[-1]
     }
-    return steam_id 
+    cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
+    cursor.execute('SELECT * FROM Connections WHERE user_id = %s', [session['id']])
+    connection_entry = cursor.fetchone()
+    if connection_entry:
+        cursor.execute("UPDATE Connections SET steam_id = '%s' WHERE user_id = '%s'", (steam_id, session['id']))
+        mysql.connection.commit()
+    else:
+        cursor.execute('INSERT INTO Connections (user_id,steam_id) VALUES (%s, %s)', 
+                           (session['id'], steam_id))
+        mysql.connection.commit()
+    return redirect(url_for('account'))
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
