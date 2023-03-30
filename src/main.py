@@ -120,6 +120,7 @@ def steam_authorize():
     url = f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&format=json'
     try:
         response = requests.get(url).json()
+        print(response)
         if len(response['response']['games']) == 0:
             redirect(url_for('account'))
         else:
