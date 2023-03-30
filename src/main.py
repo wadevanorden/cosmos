@@ -90,7 +90,7 @@ def auth_with_steam():
         'openid.claimed_id': 'https://specs.openid.net/auth/2.0/identifier_select',
         'openid.mode': 'checkid_setup',
         'openid.return_to': 'https://cosmos-achievement.com/steam_authorized',
-        'openid.realm': 'https://https://cosmos-achievement.com/'
+        'openid.realm': 'https://cosmos-achievement.com/'
     }
     query_string = urlencode(params)
     steam_openid_url = 'https://steamcommunity.com/openid/login'
