@@ -120,7 +120,6 @@ def steam_authorize():
     url = f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&format=json'
     try:
         response = requests.get(url).json()
-        print(response)
         if len(response['response']['games']) == 0:
             redirect(url_for('account'))
         else:
@@ -129,13 +128,17 @@ def steam_authorize():
                 cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
                 connection_mapping = cursor.fetchone()
                 if connection_mapping:
+                    print('1')
                     input_apps.append(connection_mapping['app_id'])
                 else:
+                    print('2')
                     new_app_id = random.getrandbits(64)
                     cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', 
                            (new_app_id, app['appid']))
                     mysql.connection.commit()
+                    print('3')
                     input_apps.append(new_app_id)
+                    print(input_apps)
             for app_id in input_apps:
                 cursor.execute('SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
                 user_app = cursor.fetchone()
