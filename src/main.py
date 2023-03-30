@@ -85,12 +85,12 @@ def auth_with_steam():
     os.environ['openid.return_to'] = 'http://127.0.0.1:5000/steam_authorized'
     os.environ['openid.realm'] = 'http://127.0.0.1:5000'''
     params = {
-        'openid.ns': 'https://specs.openid.net/auth/2.0',
-        'openid.identity': 'https://specs.openid.net/auth/2.0/identifier_select',
-        'openid.claimed_id': 'https://specs.openid.net/auth/2.0/identifier_select',
+        'openid.ns': 'http://specs.openid.net/auth/2.0',
+        'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
+        'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
         'openid.mode': 'checkid_setup',
         'openid.return_to': 'https://cosmos-achievement.com/steam_authorized',
-        'openid.realm': 'https://cosmos-achievement.com/'
+        'openid.realm': 'https://cosmos-achievement.com'
     }
     query_string = urlencode(params)
     steam_openid_url = 'https://steamcommunity.com/openid/login'
