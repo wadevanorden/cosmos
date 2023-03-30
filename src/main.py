@@ -107,7 +107,7 @@ def steam_authorize():
     cursor.execute('SELECT * FROM Connections WHERE user_id = %s', [session['id']])
     connection_entry = cursor.fetchone()
     if connection_entry:
-        cursor.execute("UPDATE Connections SET steam_id = '%s' WHERE user_id = '%s'", (steam_id, session['id']))
+        cursor.execute('UPDATE Connections SET steam_id = %s WHERE user_id = %s', (steam_id, session['id']))
         mysql.connection.commit()
     else:
         cursor.execute('INSERT INTO Connections (user_id,steam_id) VALUES (%s, %s)', 
