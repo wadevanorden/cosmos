@@ -12,12 +12,16 @@ mysql = MySQL(app)
 
 @app.route("/")
 def index():
-    return render_template('index.html', authenticated=session['loggedin'])
+    try:
+        loggedin = session['loggedin']
+    except:
+        loggedin = False
+    return render_template('index.html', authenticated=loggedin)
 
 
 @app.route("/account")
 def account():
-    return render_template('account.html')
+    return render_template('account.html', authenticated=session['loggedin'])
 
 
 @app.route("/login", methods = ['POST', 'GET'])
