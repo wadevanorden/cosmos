@@ -12,7 +12,7 @@ mysql = MySQL(app)
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template('index.html', authenticated=session['loggedin'])
 
 
 @app.route("/account")
@@ -23,7 +23,7 @@ def account():
 @app.route("/login", methods = ['POST', 'GET'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', authenticated=session['loggedin'])
     if request.method == 'POST':
         email = request.form.get('email')
         cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
@@ -36,14 +36,14 @@ def login():
                 session['loggedin'] = True
                 session['id'] = user['user_id']
                 return redirect(url_for('index'))
-        return render_template('login.html')
+        return render_template('login.html', authenticated=session['loggedin'])
 
 
 @app.route("/signup", methods = ['POST', 'GET'])
 def signup():
     error_msg = ""
     if request.method == 'GET':
-        return render_template('signup.html')
+        return render_template('signup.html', authenticated=session['loggedin'])
     if request.method == 'POST':
         email = request.form['email']
         cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
@@ -51,7 +51,7 @@ def signup():
         user = cursor.fetchone()
         if user:
             error_msg = "User exists with that email"
-            return render_template('signup.html')
+            return render_template('signup.html', authenticated=session['loggedin'])
         else:
             user_id = random.getrandbits(64)
             username = request.form['username']
@@ -81,12 +81,12 @@ def auth_with_steam():
     os.environ['openid.return_to'] = 'http://127.0.0.1:5000/steam_authorized'
     os.environ['openid.realm'] = 'http://127.0.0.1:5000'''
     params = {
-        'openid.ns': 'http://specs.openid.net/auth/2.0',
-        'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
-        'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
+        'openid.ns': 'https://specs.openid.net/auth/2.0',
+        'openid.identity': 'https://specs.openid.net/auth/2.0/identifier_select',
+        'openid.claimed_id': 'https://specs.openid.net/auth/2.0/identifier_select',
         'openid.mode': 'checkid_setup',
-        'openid.return_to': 'http://cosmos-alb-1623670014.us-east-1.elb.amazonaws.com/steam_authorized',
-        'openid.realm': 'http://cosmos-alb-1623670014.us-east-1.elb.amazonaws.com/'
+        'openid.return_to': 'https://cosmos-achievement.com/steam_authorized',
+        'openid.realm': 'https://https://cosmos-achievement.com/'
     }
     query_string = urlencode(params)
     steam_openid_url = 'https://steamcommunity.com/openid/login'
