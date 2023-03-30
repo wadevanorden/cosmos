@@ -99,9 +99,10 @@ def auth_with_steam():
 
 @app.route("/steam_authorized")
 def steam_authorize():
-    steam_id = {
-        'steam_id': request.args.get('openid.claimed_id').split('/')[-1]
-    }
+    try:
+        steam_id = request.args.get('openid.claimed_id').split('/')[-1]
+    except:
+        redirect(url_for('account'))
     cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
     cursor.execute('SELECT * FROM Connections WHERE user_id = %s', [session['id']])
     connection_entry = cursor.fetchone()
