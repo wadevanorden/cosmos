@@ -23,17 +23,6 @@ def index():
         apps = cursor.fetchall()
         for app in apps:
             app_id = app.get('app_id')
-            cursor.execute('SELECT * FROM Connections_Mapping WHERE app_id = %s', [app_id])
-            steam_appid = cursor.fetchone()
-            if steam_appid:
-                url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=93D20CD2A666CE03E9D3BA6CC793874A&appid={steam_appid}'
-                try:
-                    response = requests.get(url).json()
-                    apps_processed.append({
-                        "app_id":app_id
-                    })
-                except:
-                    continue
     return render_template('index.html', authenticated=loggedin, apps=apps_processed)
 
 
