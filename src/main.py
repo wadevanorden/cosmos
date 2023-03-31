@@ -122,7 +122,7 @@ def steam_authorize():
         mysql.connection.commit()
     
     api_key = os.getenv('STEAM_API_KEY')
-    url = f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&format=json'
+    url = f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&include_appinfo=1&include_played_free_games=1&format=json'
     try:
         response = requests.get(url).json()
         if len(response['response']['games']) == 0:
@@ -134,7 +134,6 @@ def steam_authorize():
                 connection_mapping = cursor.fetchone()
                 app_details = dict()
                 img_hash = str(app.get('img_icon_url'))
-                print(response['response'])
                 name = str(app.get('name'))
                 if connection_mapping:
                     input_apps.append(connection_mapping['app_id'])
@@ -164,10 +163,9 @@ def steam_authorize():
                 if app_data:
                     continue
                 else:
-                    continue
-                    '''cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)', 
+                    cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)', 
                            (app_details['app_id'], app_details['app_title'], app_details['$ref_art'], app_details['$ref_art_alt'], app_details['source_system'], app_details['source_id']))
-                    mysql.connection.commit()'''
+                    mysql.connection.commit()
             for app_id in input_apps:
                 cursor.execute('SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
                 user_app = cursor.fetchone()
