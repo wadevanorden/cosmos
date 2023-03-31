@@ -22,9 +22,18 @@ def index():
         cursor.execute('SELECT * FROM User_Apps WHERE user_id = %s', [user_id])
         apps = cursor.fetchall()
         for app in apps:
-            apps_processed.append({
-                "app_id":app.get('app_id')
-            })
+            app_id = app.get('app_id')
+            cursor.execute('SELECT * FROM Connections_Mapping WHERE app_id = %s', [app_id])
+            steam_appid = cursor.fetchone()
+            if steam_appid:
+                url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=93D20CD2A666CE03E9D3BA6CC793874A&appid={steam_appid}'
+                try:
+                    response = requests.get(url).json()
+                    apps_processed.append({
+                        "app_id":app_id
+                    })
+                except:
+                    continue
     return render_template('index.html', authenticated=loggedin, apps=apps_processed)
 
 
@@ -134,16 +143,38 @@ def steam_authorize():
             for app in response['response']['games']:
                 cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
                 connection_mapping = cursor.fetchone()
+                app_details = dict()
                 if connection_mapping:
                     input_apps.append(connection_mapping['app_id'])
+                    app_details = {
+                        "app_id": connection_mapping['app_id'],
+                        "app_title": app['name'],
+                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{app['appid']}/library_600x900_2x.jpg",
+                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{app['img_icon_url']}.jpg",
+                        "source_system": "Steam",
+                        "source_id": app['appid']
+                    }
                 else:
                     new_app_id = uuid.uuid4().hex
-                    try:
-                        cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
-                    except Exception as e:
-                        print(e)
+                    cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
                     mysql.connection.commit()
                     input_apps.append(new_app_id)
+                    app_details = {
+                        "app_id": new_app_id,
+                        "app_title": app['name'],
+                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{app['appid']}/library_600x900_2x.jpg",
+                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{app['img_icon_url']}.jpg",
+                        "source_system": "Steam",
+                        "source_id": app['appid']
+                    }
+                cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', app_details['app_id'])
+                app_data = cursor.fetchone()
+                if app_data:
+                    continue
+                else:
+                    cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)', 
+                           (app_details['app_id'], app_details['app_title'], app_details['$ref_art'], app_details['$ref_art_alt'], app_details['source_system'], app_details['source_id']))
+                    mysql.connection.commit()
             for app_id in input_apps:
                 cursor.execute('SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
                 user_app = cursor.fetchone()
