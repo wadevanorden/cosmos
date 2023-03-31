@@ -90,10 +90,13 @@ main {
 }
 .cards-container > button {
   display: block;
-  background: url("default-card.png") transparent;
   background-repeat: no-repeat;
   background-size: auto;
   border: none;
+}
+.card-img {
+  width: 50%;
+  height: 50%;
 }
 
 
