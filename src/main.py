@@ -16,7 +16,7 @@ mysql = MySQL(app)
 def index():
     loggedin = False
     try:
-        loggedin = session['loggedin']
+        loggedin = session.get('loggedin')
     except:
         return render_template('index.html', authenticated=loggedin)
     return render_template('index.html', authenticated=loggedin)
