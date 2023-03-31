@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_mysqldb import MySQL
 import MySQLdb as mysqlDB
-import random
+import uuid
 import requests
 import os
 from urllib.parse import urlencode
@@ -59,7 +59,7 @@ def signup():
             error_msg = "User exists with that email"
             return render_template('signup.html', authenticated=session['loggedin'])
         else:
-            user_id = random.getrandbits(64)
+            user_id = uuid.uuid4().hex
             username = request.form['username']
             first_name = request.form['first-name']
             last_name = request.form['last-name']
@@ -130,7 +130,7 @@ def steam_authorize():
                 if connection_mapping:
                     input_apps.append(connection_mapping['app_id'])
                 else:
-                    new_app_id = random.getrandbits(64)
+                    new_app_id = uuid.uuid4().hex
                     try:
                         cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
                     except Exception as e:
