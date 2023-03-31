@@ -129,11 +129,13 @@ def steam_authorize():
             redirect(url_for('account'))
         else:
             input_apps = list()
+            print('1')
             for app in response['response']['games']:
                 cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
                 connection_mapping = cursor.fetchone()
                 app_details = dict()
                 if connection_mapping:
+                    print('2')
                     input_apps.append(connection_mapping['app_id'])
                     app_details = {
                         "app_id": connection_mapping['app_id'],
@@ -158,6 +160,7 @@ def steam_authorize():
                     }
                 cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', app_details['app_id'])
                 app_data = cursor.fetchone()
+                print('3')
                 if app_data:
                     continue
                 else:
