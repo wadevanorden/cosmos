@@ -134,15 +134,16 @@ def steam_authorize():
                 cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
                 connection_mapping = cursor.fetchone()
                 app_details = dict()
+                _id = app['appid']
+                img_hash = app.get('img_icon_url')
                 if connection_mapping:
                     print('2')
                     input_apps.append(connection_mapping['app_id'])
-                    
                     app_details = {
                         "app_id": connection_mapping['app_id'],
                         "app_title": app['name'],
-                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{app['appid']}/library_600x900_2x.jpg",
-                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{app.get('img_icon_url')}.jpg",
+                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{_id}/library_600x900_2x.jpg",
+                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{_id}/{img_hash}.jpg",
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
@@ -155,8 +156,8 @@ def steam_authorize():
                     app_details = {
                         "app_id": new_app_id,
                         "app_title": app['name'],
-                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{app['appid']}/library_600x900_2x.jpg",
-                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{app['img_icon_url']}.jpg",
+                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{_id}/library_600x900_2x.jpg",
+                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{_id}/{img_hash}.jpg",
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
