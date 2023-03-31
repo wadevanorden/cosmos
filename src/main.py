@@ -14,23 +14,19 @@ mysql = MySQL(app)
 
 @app.route("/")
 def index():
-    loggedin = False
-    try:
-        loggedin = session.get('loggedin')
-    except:
-        return render_template('index.html', authenticated=loggedin)
+    loggedin = session.get('loggedin')
     return render_template('index.html', authenticated=loggedin)
 
 
 @app.route("/account")
 def account():
-    return render_template('account.html', authenticated=session['loggedin'])
+    return render_template('account.html', authenticated=session.get('loggedin'))
 
 
 @app.route("/login", methods = ['POST', 'GET'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', authenticated=session['loggedin'])
+        return render_template('login.html', authenticated=session.get('loggedin'))
     if request.method == 'POST':
         email = request.form.get('email')
         cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
@@ -43,14 +39,14 @@ def login():
                 session['loggedin'] = True
                 session['id'] = user['user_id']
                 return redirect(url_for('index'))
-        return render_template('login.html', authenticated=session['loggedin'])
+        return render_template('login.html', authenticated=session.get('loggedin'))
 
 
 @app.route("/signup", methods = ['POST', 'GET'])
 def signup():
     error_msg = ""
     if request.method == 'GET':
-        return render_template('signup.html', authenticated=session['loggedin'])
+        return render_template('signup.html', authenticated=session.get('loggedin'))
     if request.method == 'POST':
         email = request.form['email']
         cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
@@ -58,7 +54,7 @@ def signup():
         user = cursor.fetchone()
         if user:
             error_msg = "User exists with that email"
-            return render_template('signup.html', authenticated=session['loggedin'])
+            return render_template('signup.html', authenticated=session.get('loggedin'))
         else:
             user_id = uuid.uuid4().hex
             username = request.form['username']
