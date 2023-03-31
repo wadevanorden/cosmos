@@ -31,7 +31,17 @@
 	<main>
 		<div class="cards-container">
 			{% for app in apps %}
-				<button><img class="card-img" src="{{ app['$ref_art'] }}" alt="{{ app['app_title'] }}" /></button>
+				<div class=card>
+					<a href="/overview/{{ key }}">
+						<div class="card-inner">
+							<div class="card-front">
+								<img class="card-image" src="{{ app['$ref_art'] }}">
+							</div>
+							<div class="card-back">
+							</div>
+						</div>
+					</a>
+				</div>
 			{% endfor %}
 		</div>
 	</main>
