@@ -145,6 +145,7 @@ def steam_authorize():
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
+                    print('3')
                 else:
                     new_app_id = uuid.uuid4().hex
                     cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
@@ -158,7 +159,6 @@ def steam_authorize():
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
-                print('3')
                 cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', app_details['app_id'])
                 app_data = cursor.fetchone()
                 
