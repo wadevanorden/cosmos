@@ -158,9 +158,10 @@ def steam_authorize():
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
+                print('3')
                 cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', app_details['app_id'])
                 app_data = cursor.fetchone()
-                print('3')
+                
                 if app_data:
                     continue
                 else:
