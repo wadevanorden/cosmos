@@ -142,7 +142,7 @@ def steam_authorize():
                         "app_id": connection_mapping['app_id'],
                         "app_title": app['name'],
                         "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{app['appid']}/library_600x900_2x.jpg",
-                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{app['img_icon_url']}.jpg",
+                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{app.get('img_icon_url')}.jpg",
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
