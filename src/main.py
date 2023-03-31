@@ -15,12 +15,12 @@ mysql = MySQL(app)
 @app.route("/")
 def index():
     loggedin = session.get('loggedin')
+    apps_processed = list()
     if loggedin:
         user_id = session.get('loggedin')
         cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
         cursor.execute('SELECT * FROM User_Apps WHERE user_id = %s', [user_id])
         apps = cursor.fetchall()
-        apps_processed = list()
         for app in apps:
             apps_processed.append({
                 "app_id":app.get('appid')
