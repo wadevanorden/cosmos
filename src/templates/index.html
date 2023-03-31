@@ -30,8 +30,8 @@
 	</header>
 	<main>
 		<div class="cards-container">
-			{% for i in range(5) %}
-				<button></button>
+			{% for app in apps %}
+				<button>{{ app['appid'] }}</button>
 			{% endfor %}
 		</div>
 	</main>
