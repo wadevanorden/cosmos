@@ -18,7 +18,7 @@ def index():
     try:
         loggedin = session['loggedin']
     except:
-        print('Error')
+        return render_template('index.html', authenticated=loggedin)
     return render_template('index.html', authenticated=loggedin)
 
 
