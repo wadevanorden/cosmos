@@ -164,9 +164,10 @@ def steam_authorize():
                 if app_data:
                     continue
                 else:
-                    cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)', 
+                    continue
+                    '''cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)', 
                            (app_details['app_id'], app_details['app_title'], app_details['$ref_art'], app_details['$ref_art_alt'], app_details['source_system'], app_details['source_id']))
-                    mysql.connection.commit()
+                    mysql.connection.commit()'''
             for app_id in input_apps:
                 cursor.execute('SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
                 user_app = cursor.fetchone()
