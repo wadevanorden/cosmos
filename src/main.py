@@ -22,7 +22,10 @@ def index():
         cursor.execute('SELECT * FROM User_Apps WHERE user_id = %s', [user_id])
         apps = cursor.fetchall()
         for app in apps:
-            app_id = app.get('app_id')
+            cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app['app_id']])
+            app_data = cursor.fetchone()
+            if app_data:
+                apps_processed.append(app_data)
     return render_template('index.html', authenticated=loggedin, apps=apps_processed)
 
 
