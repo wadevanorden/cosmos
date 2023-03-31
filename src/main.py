@@ -134,6 +134,7 @@ def steam_authorize():
                 connection_mapping = cursor.fetchone()
                 app_details = dict()
                 img_hash = str(app.get('img_icon_url'))
+                print(app)
                 name = str(app.get('name'))
                 if connection_mapping:
                     input_apps.append(connection_mapping['app_id'])
