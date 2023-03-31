@@ -149,6 +149,7 @@ def steam_authorize():
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
+                    print('1')
                 else:
                     new_app_id = uuid.uuid4().hex
                     cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
