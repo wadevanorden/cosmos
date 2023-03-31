@@ -23,7 +23,7 @@ def index():
         apps = cursor.fetchall()
         for app in apps:
             apps_processed.append({
-                "app_id":app.get('appid')
+                "app_id":app.get('app_id')
             })
     return render_template('index.html', authenticated=loggedin, apps=apps_processed)
 
