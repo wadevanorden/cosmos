@@ -93,10 +93,11 @@ main {
   background-repeat: no-repeat;
   background-size: auto;
   border: none;
-}
-.card-img {
   width: 50%;
   height: 50%;
+}
+.card-img {
+  
 }
 
 
