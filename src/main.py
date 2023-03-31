@@ -129,27 +129,26 @@ def steam_authorize():
             redirect(url_for('account'))
         else:
             input_apps = list()
-            print('1')
             for app in response['response']['games']:
                 cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
                 connection_mapping = cursor.fetchone()
                 app_details = dict()
-                _id = app['appid']
                 img_hash = app.get('img_icon_url')
+                if not img_hash:
+                    img_hash = ''
                 name = app.get('name')
+                if not name:
+                    name = ''
                 if connection_mapping:
-                    print('2')
-                    print(app)
                     input_apps.append(connection_mapping['app_id'])
                     app_details = {
                         "app_id": connection_mapping['app_id'],
                         "app_title": name,
-                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{_id}/library_600x900_2x.jpg",
-                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{_id}/{img_hash}.jpg",
+                        "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{app['appid']}/library_600x900_2x.jpg",
+                        "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{app['appid']}/{img_hash}.jpg",
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
-                    print('3')
                 else:
                     new_app_id = uuid.uuid4().hex
                     cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
