@@ -14,10 +14,11 @@ mysql = MySQL(app)
 
 @app.route("/")
 def index():
+    loggedin = False
     try:
         loggedin = session['loggedin']
     except:
-        loggedin = False
+        print('Error')
     return render_template('index.html', authenticated=loggedin)
 
 
