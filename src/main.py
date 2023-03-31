@@ -136,12 +136,14 @@ def steam_authorize():
                 app_details = dict()
                 _id = app['appid']
                 img_hash = app.get('img_icon_url')
+                name = app.get('name')
                 if connection_mapping:
                     print('2')
+                    print(connection_mapping)
                     input_apps.append(connection_mapping['app_id'])
                     app_details = {
                         "app_id": connection_mapping['app_id'],
-                        "app_title": app['name'],
+                        "app_title": name,
                         "$ref_art": f"https://steamcdn-a.akamaihd.net/steam/apps/{_id}/library_600x900_2x.jpg",
                         "$ref_art_alt": f"https://media.steampowered.com/steamcommunity/public/images/apps/{_id}/{img_hash}.jpg",
                         "source_system": "Steam",
