@@ -139,7 +139,7 @@ def steam_authorize():
                 name = app.get('name')
                 if connection_mapping:
                     print('2')
-                    print(connection_mapping)
+                    print(app)
                     input_apps.append(connection_mapping['app_id'])
                     app_details = {
                         "app_id": connection_mapping['app_id'],
