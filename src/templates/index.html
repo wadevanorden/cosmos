@@ -32,7 +32,7 @@
 		<div class="cards-container">
 			{% for app in apps %}
 				<div class=card>
-					<a href="/overview/{{ key }}">
+					<a href="/{{ app['app_id'] }}">
 						<div class="card-inner">
 							<div class="card-front">
 								<img class="card-image" src="{{ app['$ref_art'] }}">
