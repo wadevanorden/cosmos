@@ -8,38 +8,14 @@
 </head>
 <body>
 	<header>
-		<div class="title-grid">
-			<span class="title">Cosmos</span>
-			<span class="subtitle">Achievement Codex</span>
-		</div>
-		<div>
-			<ol class="header-nav">
-				<a>Achievements Dashboard</a>
-				<a>The HUB</a>
-				<a>Leaderboards</a>
-				<a>Forums</a>
-			</ol>
-		</div>
-		<div class="account">
-			{% if authenticated %}
-				<a href="/account">Account</a>
-			{% else %}
-				<a href="/login">Login/Sign Up</a>
-			{% endif %}
-		</div>
+		{% include 'header.html' %}
 	</header>
 	<main>
 		<div class="cards-container">
 			{% for app in apps %}
 				<div class=card>
-					<a href="/{{ app['app_id'] }}/">
-						<div class="card-inner">
-							<div class="card-front">
-								<img class="card-image" src="{{ app['$ref_art'] }}">
-							</div>
-							<div class="card-back">
-							</div>
-						</div>
+					<a href="/app/{{ app['app_id'] }}/">
+						<img class="card-image" src="{{ app['$ref_art'] }}" onerror="this.src='{{ app['$ref_art_alt'] }}'" alt="{{ app['app_title'] }}">
 					</a>
 				</div>
 			{% endfor %}

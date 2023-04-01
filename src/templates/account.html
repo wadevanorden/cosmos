@@ -8,25 +8,7 @@
 </head>
 <body>
 	<header>
-		<div class="title-grid">
-			<span class="title">Cosmos</span>
-			<span class="subtitle">Achievement Codex</span>
-		</div>
-		<div>
-			<ol class="header-nav">
-				<a>Achievements Dashboard</a>
-				<a>The HUB</a>
-				<a>Leaderboards</a>
-				<a>Forums</a>
-			</ol>
-		</div>
-		<div class="account">
-			{% if authenticated %}
-				<a href="/account">Account</a>
-			{% else %}
-				<a href="/login">Login/Sign Up</a>
-			{% endif %}
-		</div>
+		{% include 'header.html' %}
 	</header>
 	<main>
 		<div class="account-module">

@@ -55,7 +55,6 @@ def login():
 
 @app.route("/signup", methods = ['POST', 'GET'])
 def signup():
-    error_msg = ""
     if request.method == 'GET':
         return render_template('signup.html', authenticated=session.get('loggedin'))
     if request.method == 'POST':
