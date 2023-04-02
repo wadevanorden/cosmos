@@ -2,7 +2,7 @@ body {
   font-family: 'Kanit';
   font-style: normal;
   color: #FFFFFF;
-  background: linear-gradient(180deg, #5B2843 0%, #615A41 32.29%, #0C2B3D 96.35%);
+  background: linear-gradient(90deg, #5B2843 0%, #615A41 32.29%, #0C2B3D 96.35%);
   margin: 0%;
   max-width: 100%;
   overflow-x: hidden;
@@ -202,6 +202,17 @@ main {
 .account-etc {
   grid-area: etc;
 }
+
+.app-base {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+.app-achievements {
+  margin-right: 5%;
+  background-color: #302C3A;
+}
+
+
 .primary-button {
   background: #53375D;
   border-radius: 5px;

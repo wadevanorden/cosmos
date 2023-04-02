@@ -11,14 +11,15 @@
 		{% include 'header.html' %}
 	</header>
 	<main>
-		<div class="cards-container">
-			{% for app in apps %}
-				<div class=card>
-					<a href="/app/{{ app['app_id'] }}">
-						<img class="card-image" src="{{ app['$ref_art'] }}" onerror="this.src='{{ app['$ref_art_alt'] }}'" alt="{{ app['app_title'] }}">
-					</a>
-				</div>
-			{% endfor %}
+		<div class="app-base">
+            <div class="app-filters">
+
+            </div>
+            <div class="app-achievements">
+                {% for i in range(30) %}
+                    <div>i</div>
+                {% endfor %}
+            </div>
 		</div>
 	</main>
 	<footer>

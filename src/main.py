@@ -80,9 +80,57 @@ def signup():
 
 @app.route('/logout')
 def logout():
-   session.pop('loggedin', None)
-   session.pop('id', None)
-   return redirect(url_for('login'))
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    return redirect(url_for('login'))
+
+
+@app.route('/app/<app_id>')
+def app_route(app_id):
+    cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
+    cursor.execute('SELECT * FROM App_Achievement_Data WHERE app_id = %s', [app_id])
+    app_achievement_data = cursor.fetchall()
+    achievement_data = list()
+    if app_achievement_data:
+        for app in app_achievement_data:
+            achievement_data.append({
+                'app_id': app['app_id'],
+                'achievement_id': app['achievement_id'],
+                'achievement_title': app['achievement_title'],
+                'hidden': app['hidden'],
+                'cosmos_percent': app['cosmos_percent'],
+                'source_percent': app['source_percent'],
+            })
+    else:
+        cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app_id])
+        mapping = cursor.fetchone()
+        source_id = ''
+        if mapping:
+            source_id = mapping['source_id']
+        else:
+            return 'Error'
+        api_key = os.getenv('STEAM_API_KEY')
+        url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={api_key}&appid={source_id}'
+        url_2 = f'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={source_id}&format=json'
+        response = requests.get(url).json()
+        response_2 = requests.get(url_2).json()['achievementpercentages']['achievements']
+        for achievement in response['game']['achievements']:
+            achivement_id = uuid.uuid4().hex
+            achievement_title = achievement.get('displayName')
+            achievement_description = achievement.get('description')
+            art = response.get('icon')
+            hidden = False
+            if response.get('hidden') == 1:
+                hidden = True
+            cosmos_percent = 0.0
+            source_percent = 0.0
+            for achievement_percent in response_2:
+                if achievement_percent['name'] == achievement['name']:
+                    source_percent = achievement_percent['percent']
+            cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', 
+                           (app_id, achivement_id, response, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
+            mysql.connection.commit()
+    return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
 
 
 @app.route("/steam_auth")
