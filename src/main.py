@@ -115,7 +115,7 @@ def app_route(app_id):
         response = requests.get(url).json()
         response_2 = requests.get(url_2).json()['achievementpercentages']['achievements']
         print(response)
-        for achievement in response['game']['achievements']:
+        for achievement in response['game']['availableGameStats']['achievements']:
             achivement_id = uuid.uuid4().hex
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
