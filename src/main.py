@@ -130,6 +130,14 @@ def app_route(app_id):
             cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', 
                            (app_id, achivement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
             mysql.connection.commit()
+            achievement_data.append({
+                'app_id': app_id,
+                'achievement_id': achivement_id,
+                'achievement_title': achievement_title,
+                'hidden': hidden,
+                'cosmos_percent': cosmos_percent,
+                'source_percent': source_percent,
+            })
     return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
 
 
