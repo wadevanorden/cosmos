@@ -114,6 +114,7 @@ def app_route(app_id):
         url_2 = f'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={source_id}&format=json'
         response = requests.get(url).json()
         response_2 = requests.get(url_2).json()['achievementpercentages']['achievements']
+        print(response)
         for achievement in response['game']['achievements']:
             achivement_id = uuid.uuid4().hex
             achievement_title = achievement.get('displayName')
