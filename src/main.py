@@ -129,7 +129,7 @@ def app_route(app_id):
                 if achievement_percent['name'] == achievement['name']:
                     source_percent = achievement_percent['percent']
             cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', 
-                           (app_id, achivement_id, response, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
+                           (app_id, achivement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
             mysql.connection.commit()
     return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
 
