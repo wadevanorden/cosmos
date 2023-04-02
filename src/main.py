@@ -118,9 +118,9 @@ def app_route(app_id):
             achivement_id = uuid.uuid4().hex
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
-            art = response.get('icon')
+            art = achievement.get('icon')
             hidden = False
-            if response.get('hidden') == 1:
+            if achievement.get('hidden') == 1:
                 hidden = True
             cosmos_percent = 0.0
             source_percent = 0.0
