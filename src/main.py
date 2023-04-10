@@ -178,7 +178,7 @@ def app_route(app_id):
                     if achievement_percent['name'] == achievement['name']:
                         source_percent = achievement_percent['percent']
                 cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                            (app_id, achievement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
+                               (app_id, achievement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
                 mysql.connection.commit()
                 achievement_data.append({
                     'app_id': app_id,
@@ -194,7 +194,17 @@ def app_route(app_id):
         except Exception as e:
             print(e)
     min_percent = -1
-    hardest_achievement = dict()
+    hardest_achievement = {
+        'app_id': None,
+        'achievement_id': None,
+        'achievement_title': None,
+        'achievement_description': None,
+        'art': None,
+        'hidden': None,
+        'cosmos_percent': 0,
+        'source_percent': 0,
+        'source_system': None,
+    }
     achievement_percent_total = 0
     achievement_hidden_total = 0
     for achievement in achievement_data:
@@ -207,8 +217,9 @@ def app_route(app_id):
         elif achievement['source_percent'] < min_percent:
             min_percent = achievement['source_percent']
             hardest_achievement = achievement
-    if len(achievement_data) > 0: 
-        achievement_percent_total = achievement_percent_total/len(achievement_data)
+    if len(achievement_data) > 0:
+        achievement_percent_total = achievement_percent_total / \
+            len(achievement_data)
     else:
         achievement_percent_total = 0
     app_overview_details = {
