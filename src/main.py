@@ -120,6 +120,7 @@ def app_route(app_id):
                         "achievement_description": achievement_description,
                         "art": art
                     }
+                print(user_achievement_details)
             except:
                 print('not logged in')
     
