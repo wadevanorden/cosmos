@@ -106,10 +106,8 @@ def app_route(app_id):
             try:
                 source_id = app_data['source_id']
                 user_achievement_data_url = f'https://steamcommunity.com/profiles/{user_id}/stats/{source_id}/achievements/?xml=1'
-                print('test')
                 tree = ET.fromstring(game_achievements.content)
                 achievement_details = dict()
-                print('test2')
                 for item in tree.findall('./achievements/achievement'):
                     for child in item:
                         if child.tag == 'description':
@@ -122,8 +120,8 @@ def app_route(app_id):
                         "achievement_description": achievement_description,
                         "art": art
                     }
-            except:
-                print('not logged in')
+            except as e:
+                print(e)
     
     achievement_data = list()
     if app_achievement_data:
