@@ -1,28 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Cosmos - Achievement Codex</title>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmos - Achievement Codex</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
 </head>
 <body>
-	<header>
-		{% include 'header.html' %}
-	</header>
-	<main>
-		<div class="app-base">
-            <div class="app-filters">
-
+    <header>
+        {% include 'header.html' %}
+    </header>
+    <main>
+        <div class="app-base">
+            <div class="app-overview">
             </div>
             <div class="app-achievements">
-                {% for achievement in app_achievement_data %}
-                    <div>{{ achievement }}</div>
-                {% endfor %}
+                <div>
+                    <span>Search Achievements:</span>
+                </div>
+                <div>
+                    <input type="text" placeholder="search">
+                </div>
+                <div class="achievement-container">
+                    {% for achievement in app_achievement_data %}
+                        <div class="achievement-card">
+                            <img src="{{ achievement['art'] }}">
+                            <div>
+                                <span class="achievement-card-title">
+                                    {{ achievement['achievement_title'] }}
+                                </span>
+                                <br>
+                                <span class="achievement-card-description">
+                                    {{ achievement['achievement_description'] }}
+                                </span>
+                                <br>
+                                <span class="achievement-card-percentage">
+                                    Cosmos-{{ achievement['cosmos_percent'] | round(2) }}% {{ achievement['source_system'] }}-{{ achievement['source_percent'] | round(2) }}%
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
-		</div>
-	</main>
-	<footer>
-	</footer>
+        </div>
+    </main>
+    <footer>
+    </footer>
 </body>
 </html>

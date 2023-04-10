@@ -206,10 +206,50 @@ main {
 .app-base {
   display: grid;
   grid-template-columns: 50% 50%;
+  min-width: 100%;
+}
+.app-overview {
+  margin-left: 5%;
+  border-right: 2px solid white;
+  background-color: #302c3a;
 }
 .app-achievements {
   margin-right: 5%;
-  background-color: #302C3A;
+  background-color: #302c3a70;
+  padding: 5%;
+}
+.achievement-container {
+  display: grid;
+  grid-template-columns: 100%;
+  gap: .1%;
+  border: 1px solid rgb(255, 255, 255);
+  max-height: 60vh;
+  overflow-y: scroll;
+}
+.achievement-card {
+  display: grid;
+  background: #302c3a;
+  grid-template-columns: 10% 90%;
+  padding: 3%;
+  margin: 1%;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.achievement-card > img{
+  max-width: 64px;
+  max-height: 64px;
+  border-radius: 5px;
+  border: 1px solid #a7a7a7;
+}
+.achievement-card-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+.achievement-card-description {
+  color: #b893ff;
+}
+.achievement-card-percentage {
+  font-size: 12px;
+  font-style: italic;
 }
 
 

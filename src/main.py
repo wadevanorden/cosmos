@@ -6,6 +6,7 @@ import requests
 import os
 from urllib.parse import urlencode
 from werkzeug.security import generate_password_hash, check_password_hash
+import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -16,7 +17,9 @@ mysql = MySQL(app)
 def index():
     loggedin = session.get('loggedin')
     apps_processed = list()
-    if loggedin:
+    if not loggedin:
+        return redirect(url_for('login'))
+    else:
         user_id = session.get('id')
         cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
         cursor.execute('SELECT * FROM User_Apps WHERE user_id = %s', [user_id])
@@ -90,43 +93,78 @@ def app_route(app_id):
     cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
     cursor.execute('SELECT * FROM App_Achievement_Data WHERE app_id = %s', [app_id])
     app_achievement_data = cursor.fetchall()
+    cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app_id])
+    app_data = cursor.fetchone()
+
+    loggedin = session.get('loggedin')
+    if loggedin:
+        user_id = session.get('id')
+        cursor.execute('SELECT * FROM Connections WHERE user_id = %s', [user_id])
+        user_connections = cursor.fetchone()
+        user_achievement_details = dict()
+        if user_connections:
+            try:
+                source_id = app_data['source_id']
+                user_achievement_data_url = f'https://steamcommunity.com/profiles/{user_id}/stats/{source_id}/achievements/?xml=1'
+                tree = ET.fromstring(game_achievements.content)
+                achievement_details = dict()
+                for item in tree.findall('./achievements/achievement'):
+                    for child in item:
+                        if child.tag == 'description':
+                            achievement_description = child.text
+                        if child.tag == 'iconClosed':
+                            art = child.text
+                        if child.tag == 'name':
+                            name = child.text
+                    user_achievement_details[name] = {
+                        "achievement_description": achievement_description,
+                        "art": art
+                    }
+            except:
+                print('not logged in')
+    
     achievement_data = list()
     if app_achievement_data:
-        for app in app_achievement_data:
+        for app_achievement in app_achievement_data:
             achievement_data.append({
-                'app_id': app['app_id'],
-                'achievement_id': app['achievement_id'],
-                'achievement_title': app['achievement_title'],
-                'achievement_description': app['achievement_description'],
-                'art': app['$ref_art'],
-                'hidden': app['hidden'],
-                'cosmos_percent': app['cosmos_percent'],
-                'source_percent': app['source_percent'],
+                'app_id': app_achievement['app_id'],
+                'achievement_id': app_achievement['achievement_id'],
+                'achievement_title': app_achievement['achievement_title'],
+                'achievement_description': app_achievement['achievement_description'],
+                'art': app_achievement['$ref_art'],
+                'hidden': app_achievement['hidden'],
+                'cosmos_percent': app_achievement['cosmos_percent'],
+                'source_percent': app_achievement['source_percent'],
+                'source_system': app_data['source_system'],
             })
     else:
-        cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app_id])
+        cursor.execute('SELECT * FROM Connections_Mapping WHERE app_id = %s', [app_id])
         mapping = cursor.fetchone()
         source_id = ''
         if mapping:
-            source_id = mapping['source_id']
+            source_id = mapping['appid']
         else:
-            return 'Error'
+            return 'App Not Found'
         api_key = os.getenv('STEAM_API_KEY')
-        url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={api_key}&appid={source_id}'
-        url_2 = f'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={source_id}&format=json'
-        response = requests.get(url).json()
-        response_2 = requests.get(url_2).json()['achievementpercentages']['achievements']
-        for achievement in response['game']['availableGameStats']['achievements']:
+        game_schema_url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={api_key}&appid={source_id}'
+        achievement_percentages_url = f'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={source_id}&format=json'
+        game_schema = requests.get(game_schema_url).json()
+        achievement_percentages = requests.get(achievement_percentages_url).json()['achievementpercentages']['achievements']
+        for achievement in game_schema['game']['availableGameStats']['achievements']:
             achivement_id = uuid.uuid4().hex
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
+            if not achievement_description:
+                achievement_description = user_achievement_details[achievement_title]['achievement_description']
             art = achievement.get('icon')
+            if not art:
+                art = user_achievement_details[achievement_title]['art']
             hidden = False
             if achievement.get('hidden') == 1:
                 hidden = True
             cosmos_percent = 0.0
             source_percent = 0.0
-            for achievement_percent in response_2:
+            for achievement_percent in achievement_percentages:
                 if achievement_percent['name'] == achievement['name']:
                     source_percent = achievement_percent['percent']
             cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', 
@@ -141,18 +179,13 @@ def app_route(app_id):
                 'hidden': hidden,
                 'cosmos_percent': cosmos_percent,
                 'source_percent': source_percent,
+                'source_system': 'Steam',
             })
     return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
 
 
 @app.route("/steam_auth")
 def auth_with_steam():
-    '''os.environ['openid.ns'] = 'http://specs.openid.net/auth/2.0'
-    os.environ['openid.identity'] = 'http://specs.openid.net/auth/2.0/identifier_select'
-    os.environ['openid.mode'] = 'checkid_setup'
-    os.environ['openid.claimed_id'] = 'http://specs.openid.net/auth/2.0/identifier_select'
-    os.environ['openid.return_to'] = 'http://127.0.0.1:5000/steam_authorized'
-    os.environ['openid.realm'] = 'http://127.0.0.1:5000'''
     params = {
         'openid.ns': 'http://specs.openid.net/auth/2.0',
         'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
