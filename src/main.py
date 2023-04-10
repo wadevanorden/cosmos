@@ -13,6 +13,7 @@ app.config.from_pyfile('config.py')
 
 mysql = MySQL(app)
 
+
 @app.route("/")
 def index():
     loggedin = session.get('loggedin')
@@ -25,7 +26,8 @@ def index():
         cursor.execute('SELECT * FROM User_Apps WHERE user_id = %s', [user_id])
         apps = cursor.fetchall()
         for app in apps:
-            cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app['app_id']])
+            cursor.execute(
+                'SELECT * FROM App_Data WHERE app_id = %s', [app['app_id']])
             app_data = cursor.fetchone()
             if app_data:
                 apps_processed.append(app_data)
@@ -37,7 +39,7 @@ def account():
     return render_template('account.html', authenticated=session.get('loggedin'))
 
 
-@app.route("/login", methods = ['POST', 'GET'])
+@app.route("/login", methods=['POST', 'GET'])
 def login():
     if request.method == 'GET':
         return render_template('login.html', authenticated=session.get('loggedin'))
@@ -56,7 +58,7 @@ def login():
         return render_template('login.html', authenticated=session.get('loggedin'))
 
 
-@app.route("/signup", methods = ['POST', 'GET'])
+@app.route("/signup", methods=['POST', 'GET'])
 def signup():
     if request.method == 'GET':
         return render_template('signup.html', authenticated=session.get('loggedin'))
@@ -75,7 +77,7 @@ def signup():
             last_name = request.form['last-name']
             enabled = True
             password = generate_password_hash(request.form['password'])
-            cursor.execute('INSERT INTO Users (user_id,first_name,last_name,email,username,password,enabled) VALUES (%s, %s, %s, %s, %s, %s, %s)', 
+            cursor.execute('INSERT INTO Users (user_id,first_name,last_name,email,username,password,enabled) VALUES (%s, %s, %s, %s, %s, %s, %s)',
                            (user_id, first_name, last_name, email, username, password, enabled))
             mysql.connection.commit()
             return redirect(url_for('login'))
@@ -91,40 +93,12 @@ def logout():
 @app.route('/app/<app_id>')
 def app_route(app_id):
     cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
-    cursor.execute('SELECT * FROM App_Achievement_Data WHERE app_id = %s', [app_id])
+    cursor.execute(
+        'SELECT * FROM App_Achievement_Data WHERE app_id = %s', [app_id])
     app_achievement_data = cursor.fetchall()
     cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app_id])
     app_data = cursor.fetchone()
 
-    loggedin = session.get('loggedin')
-    if loggedin:
-        user_id = session.get('id')
-        cursor.execute('SELECT * FROM Connections WHERE user_id = %s', [user_id])
-        user_connections = cursor.fetchone()
-        user_achievement_details = dict()
-        if user_connections:
-            try:
-                source_id = app_data['source_id']
-                steam_id = user_connections['steam_id']
-                user_achievement_data_url = f'https://steamcommunity.com/profiles/{steam_id}/stats/{source_id}/achievements/?xml=1'
-                user_game_achievements = requests.get(user_achievement_data_url)
-                tree = ET.fromstring(user_game_achievements.content)
-                achievement_details = dict()
-                for item in tree.findall('./achievements/achievement'):
-                    for child in item:
-                        if child.tag == 'description':
-                            achievement_description = child.text
-                        if child.tag == 'iconClosed':
-                            art = child.text
-                        if child.tag == 'name':
-                            name = child.text
-                    user_achievement_details[name] = {
-                        "achievement_description": achievement_description,
-                        "art": art
-                    }
-            except Exception as e:
-                print(e)
-    
     achievement_data = list()
     if app_achievement_data:
         for app_achievement in app_achievement_data:
@@ -140,7 +114,38 @@ def app_route(app_id):
                 'source_system': app_data['source_system'],
             })
     else:
-        cursor.execute('SELECT * FROM Connections_Mapping WHERE app_id = %s', [app_id])
+        loggedin = session.get('loggedin')
+        if loggedin:
+            user_id = session.get('id')
+            cursor.execute(
+                'SELECT * FROM Connections WHERE user_id = %s', [user_id])
+            user_connections = cursor.fetchone()
+            user_achievement_details = dict()
+            if user_connections:
+                try:
+                    source_id = app_data['source_id']
+                    steam_id = user_connections['steam_id']
+                    user_achievement_data_url = f'https://steamcommunity.com/profiles/{steam_id}/stats/{source_id}/achievements/?xml=1'
+                    user_game_achievements = requests.get(
+                        user_achievement_data_url)
+                    tree = ET.fromstring(user_game_achievements.content)
+                    achievement_details = dict()
+                    for item in tree.findall('./achievements/achievement'):
+                        for child in item:
+                            if child.tag == 'description':
+                                achievement_description = child.text
+                            if child.tag == 'iconClosed':
+                                art = child.text
+                            if child.tag == 'name':
+                                name = child.text
+                        user_achievement_details[name] = {
+                            "achievement_description": achievement_description,
+                            "art": art
+                        }
+                except Exception as e:
+                    print(e)
+        cursor.execute(
+            'SELECT * FROM Connections_Mapping WHERE app_id = %s', [app_id])
         mapping = cursor.fetchone()
         source_id = ''
         if mapping:
@@ -151,13 +156,15 @@ def app_route(app_id):
         game_schema_url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={api_key}&appid={source_id}'
         achievement_percentages_url = f'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={source_id}&format=json'
         game_schema = requests.get(game_schema_url).json()
-        achievement_percentages = requests.get(achievement_percentages_url).json()['achievementpercentages']['achievements']
+        achievement_percentages = requests.get(achievement_percentages_url).json()[
+            'achievementpercentages']['achievements']
         for achievement in game_schema['game']['availableGameStats']['achievements']:
             achivement_id = uuid.uuid4().hex
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
             if not achievement_description:
-                achievement_description = user_achievement_details[achievement_title]['achievement_description']
+                achievement_description = user_achievement_details[
+                    achievement_title]['achievement_description']
             art = achievement.get('icon')
             if not art:
                 art = user_achievement_details[achievement_title]['art']
@@ -169,7 +176,7 @@ def app_route(app_id):
             for achievement_percent in achievement_percentages:
                 if achievement_percent['name'] == achievement['name']:
                     source_percent = achievement_percent['percent']
-            cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', 
+            cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                            (app_id, achivement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
             mysql.connection.commit()
             achievement_data.append({
@@ -183,7 +190,6 @@ def app_route(app_id):
                 'source_percent': source_percent,
                 'source_system': 'Steam',
             })
-    print(len(achievement_data))
     return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
 
 
@@ -202,6 +208,7 @@ def auth_with_steam():
     auth_url = steam_openid_url + "?" + query_string
     return redirect(auth_url)
 
+
 @app.route("/steam_authorized")
 def steam_authorize():
     try:
@@ -209,16 +216,18 @@ def steam_authorize():
     except:
         redirect(url_for('account'))
     cursor = mysql.connection.cursor(mysqlDB.cursors.DictCursor)
-    cursor.execute('SELECT * FROM Connections WHERE user_id = %s', [session['id']])
+    cursor.execute(
+        'SELECT * FROM Connections WHERE user_id = %s', [session['id']])
     connection_entry = cursor.fetchone()
     if connection_entry:
-        cursor.execute('UPDATE Connections SET steam_id = %s WHERE user_id = %s', (steam_id, session['id']))
+        cursor.execute(
+            'UPDATE Connections SET steam_id = %s WHERE user_id = %s', (steam_id, session['id']))
         mysql.connection.commit()
     else:
-        cursor.execute('INSERT INTO Connections (user_id,steam_id) VALUES (%s, %s)', 
-                           (session['id'], steam_id))
+        cursor.execute('INSERT INTO Connections (user_id,steam_id) VALUES (%s, %s)',
+                       (session['id'], steam_id))
         mysql.connection.commit()
-    
+
     api_key = os.getenv('STEAM_API_KEY')
     url = f'https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={api_key}&steamid={steam_id}&include_appinfo=1&include_played_free_games=1&format=json'
     try:
@@ -228,7 +237,8 @@ def steam_authorize():
         else:
             input_apps = list()
             for app in response['response']['games']:
-                cursor.execute('SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
+                cursor.execute(
+                    'SELECT * FROM Connections_Mapping WHERE appid = %s', [app['appid']])
                 connection_mapping = cursor.fetchone()
                 app_details = dict()
                 img_hash = str(app.get('img_icon_url'))
@@ -245,7 +255,8 @@ def steam_authorize():
                     }
                 else:
                     new_app_id = uuid.uuid4().hex
-                    cursor.execute('INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
+                    cursor.execute(
+                        'INSERT INTO Connections_Mapping (app_id,appid) VALUES (%s, %s)', (new_app_id, app['appid']))
                     mysql.connection.commit()
                     input_apps.append(new_app_id)
                     app_details = {
@@ -256,29 +267,31 @@ def steam_authorize():
                         "source_system": "Steam",
                         "source_id": app['appid']
                     }
-                cursor.execute('SELECT * FROM App_Data WHERE app_id = %s', [app_details['app_id']])
+                cursor.execute(
+                    'SELECT * FROM App_Data WHERE app_id = %s', [app_details['app_id']])
                 app_data = cursor.fetchone()
                 if app_data:
                     continue
                 else:
-                    cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)', 
-                           (app_details['app_id'], app_details['app_title'], app_details['$ref_art'], app_details['$ref_art_alt'], app_details['source_system'], app_details['source_id']))
+                    cursor.execute('INSERT INTO App_Data (app_id,app_title,$ref_art,$ref_art_alt,source_system,source_id) VALUES (%s, %s, %s, %s, %s, %s)',
+                                   (app_details['app_id'], app_details['app_title'], app_details['$ref_art'], app_details['$ref_art_alt'], app_details['source_system'], app_details['source_id']))
                     mysql.connection.commit()
             for app_id in input_apps:
-                cursor.execute('SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
+                cursor.execute(
+                    'SELECT * FROM User_Apps WHERE app_id = %s', [app_id])
                 user_app = cursor.fetchone()
                 if user_app:
                     continue
                 else:
-                    cursor.execute('INSERT INTO User_Apps (user_id,app_id) VALUES (%s, %s)', 
-                           (session['id'], app_id))
+                    cursor.execute('INSERT INTO User_Apps (user_id,app_id) VALUES (%s, %s)',
+                                   (session['id'], app_id))
                     mysql.connection.commit()
             redirect(url_for('account'))
     except:
         redirect(url_for('index'))
-    
 
     return redirect(url_for('account'))
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
