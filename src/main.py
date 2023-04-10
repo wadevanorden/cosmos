@@ -106,7 +106,8 @@ def app_route(app_id):
             try:
                 source_id = app_data['source_id']
                 user_achievement_data_url = f'https://steamcommunity.com/profiles/{user_id}/stats/{source_id}/achievements/?xml=1'
-                tree = ET.fromstring(game_achievements.content)
+                user_game_achievements = requests.get(user_achievement_data_url)
+                tree = ET.fromstring(user_game_achievements.content)
                 achievement_details = dict()
                 for item in tree.findall('./achievements/achievement'):
                     for child in item:
