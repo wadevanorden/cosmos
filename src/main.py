@@ -105,7 +105,8 @@ def app_route(app_id):
         if user_connections:
             try:
                 source_id = app_data['source_id']
-                user_achievement_data_url = f'https://steamcommunity.com/profiles/{user_id}/stats/{source_id}/achievements/?xml=1'
+                steam_id = app_data['steam_id']
+                user_achievement_data_url = f'https://steamcommunity.com/profiles/{steam_id}/stats/{source_id}/achievements/?xml=1'
                 user_game_achievements = requests.get(user_achievement_data_url)
                 tree = ET.fromstring(user_game_achievements.content)
                 achievement_details = dict()
@@ -156,7 +157,6 @@ def app_route(app_id):
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
             if not achievement_description:
-                print(user_achievement_details)
                 achievement_description = user_achievement_details[achievement_title]['achievement_description']
             art = achievement.get('icon')
             if not art:
