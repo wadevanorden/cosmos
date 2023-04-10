@@ -156,40 +156,43 @@ def app_route(app_id):
         game_schema_url = f'https://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={api_key}&appid={source_id}'
         achievement_percentages_url = f'http://api.steampowered.com/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid={source_id}&format=json'
         game_schema = requests.get(game_schema_url).json()
-        achievement_percentages = requests.get(achievement_percentages_url).json()[
-            'achievementpercentages']['achievements']
-        for achievement in game_schema['game']['availableGameStats']['achievements']:
-            achievement_id = uuid.uuid4().hex
-            achievement_title = achievement.get('displayName')
-            achievement_description = achievement.get('description')
-            if not achievement_description:
-                achievement_description = user_achievement_details[
-                    achievement_title]['achievement_description']
-            art = achievement.get('icon')
-            if not art:
-                art = user_achievement_details[achievement_title]['art']
-            hidden = False
-            if achievement.get('hidden') == 1:
-                hidden = True
-            cosmos_percent = 0.0
-            source_percent = 0.0
-            for achievement_percent in achievement_percentages:
-                if achievement_percent['name'] == achievement['name']:
-                    source_percent = achievement_percent['percent']
-            cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                           (app_id, achievement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
-            mysql.connection.commit()
-            achievement_data.append({
-                'app_id': app_id,
-                'achievement_id': achievement_id,
-                'achievement_title': achievement_title,
-                'achievement_description': achievement_description,
-                'art': art,
-                'hidden': hidden,
-                'cosmos_percent': cosmos_percent,
-                'source_percent': source_percent,
-                'source_system': 'Steam',
-            })
+        try:
+            achievement_percentages = requests.get(achievement_percentages_url).json()[
+                'achievementpercentages']['achievements']
+            for achievement in game_schema['game']['availableGameStats']['achievements']:
+                achievement_id = uuid.uuid4().hex
+                achievement_title = achievement.get('displayName')
+                achievement_description = achievement.get('description')
+                if not achievement_description:
+                    achievement_description = user_achievement_details[
+                        achievement_title]['achievement_description']
+                art = achievement.get('icon')
+                if not art:
+                    art = user_achievement_details[achievement_title]['art']
+                hidden = False
+                if achievement.get('hidden') == 1:
+                    hidden = True
+                cosmos_percent = 0.0
+                source_percent = 0.0
+                for achievement_percent in achievement_percentages:
+                    if achievement_percent['name'] == achievement['name']:
+                        source_percent = achievement_percent['percent']
+                cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                            (app_id, achievement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
+                mysql.connection.commit()
+                achievement_data.append({
+                    'app_id': app_id,
+                    'achievement_id': achievement_id,
+                    'achievement_title': achievement_title,
+                    'achievement_description': achievement_description,
+                    'art': art,
+                    'hidden': hidden,
+                    'cosmos_percent': cosmos_percent,
+                    'source_percent': source_percent,
+                    'source_system': 'Steam',
+                })
+        except Exception as e:
+            print(e)
     min_percent = -1
     hardest_achievement = dict()
     achievement_percent_total = 0
