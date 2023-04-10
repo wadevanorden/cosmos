@@ -242,6 +242,22 @@ main {
   border: 2px solid #ffffff75;
   border-radius: 3px;
 }
+.difficulty-scale {
+  position: relative;
+  background: linear-gradient(90deg, rgba(86,255,89,1) 0%, rgba(255,253,93,1) 50%, rgba(255,90,90,1) 100%);
+  border: solid 2px white;
+  border-radius: 20%;
+  width: 75%;
+  height: 25px;
+  margin: 5%;
+  display: flex;
+  align-items: center;
+}
+.difficulty-scale > div {
+  position: relative;
+  font-weight: bold;
+  color: black;
+}
 .app-achievements {
   margin-right: 5%;
   background-color: #302c3a70;

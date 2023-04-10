@@ -224,7 +224,8 @@ def app_route(app_id):
         achievement_percent_total = 0
     app_overview_details = {
         'average_achivement_percent': achievement_percent_total,
-        'hidden_total': achievement_hidden_total
+        'hidden_total': achievement_hidden_total,
+        'app_difficulty': achievement_percent_total*min_percent
     }
 
     return render_template('app.html', authenticated=session.get('loggedin'), app_data=app_data, app_achievement_data=achievement_data, hardest_achievement=hardest_achievement, app_overview_details=app_overview_details)
