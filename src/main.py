@@ -120,7 +120,7 @@ def app_route(app_id):
                         "achievement_description": achievement_description,
                         "art": art
                     }
-            except as e:
+            except as Exception e:
                 print(e)
     
     achievement_data = list()
