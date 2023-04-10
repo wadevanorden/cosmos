@@ -36,7 +36,7 @@
                         <li>100% Difficulty Scale -
                             {% set app_difficulty = app_overview_details['app_difficulty']|round(3)%}
                             <div class="difficulty-scale">
-                                {% if app_difficulty < 87 %}
+                                {% if app_difficulty < 87 and app_difficulty > 0 %}
                                     <div style="left:{{app_difficulty}}%;">
                                         {{app_difficulty}}%
                                     </div>
