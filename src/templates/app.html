@@ -40,6 +40,8 @@
                                     <div style="left:{{app_difficulty}}%;">
                                         {{app_difficulty}}%
                                     </div>
+                                {% elif app_difficulty == 0 %}
+                                    {% set app_difficulty = 100 %}
                                 {% else %}
                                     <div style="left:88%;">
                                         {{app_difficulty}}%
