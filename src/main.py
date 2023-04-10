@@ -156,6 +156,7 @@ def app_route(app_id):
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
             if not achievement_description:
+                print(user_achievement_details)
                 achievement_description = user_achievement_details[achievement_title]['achievement_description']
             art = achievement.get('icon')
             if not art:
