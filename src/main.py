@@ -105,7 +105,7 @@ def app_route(app_id):
         if user_connections:
             try:
                 source_id = app_data['source_id']
-                steam_id = app_data['steam_id']
+                steam_id = user_connections['steam_id']
                 user_achievement_data_url = f'https://steamcommunity.com/profiles/{steam_id}/stats/{source_id}/achievements/?xml=1'
                 user_game_achievements = requests.get(user_achievement_data_url)
                 tree = ET.fromstring(user_game_achievements.content)
