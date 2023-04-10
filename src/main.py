@@ -183,6 +183,7 @@ def app_route(app_id):
                 'source_percent': source_percent,
                 'source_system': 'Steam',
             })
+    print(len(achievement_data))
     return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
 
 
