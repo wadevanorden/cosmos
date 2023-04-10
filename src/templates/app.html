@@ -13,6 +13,33 @@
     <main>
         <div class="app-base">
             <div class="app-overview">
+                <div class="app-title">
+                    <span>{{ app_data['app_title'] }}</span>
+                </div>
+                <div class="app-details">
+                    <img src="{{ app_data['$ref_art'] }}" onerror="this.src='{{ app_data['$ref_art_alt'] }}'" alt="{{ app_data['app_title'] }}">
+                    <ul>
+                        <li>Achievement Count -{{app_achievement_data | length}}
+                            <ul>
+                                <li>Hidden - {{app_overview_details['hidden_total']}}</li>
+                                <li>Earned/Remaining - </li>
+                            </ul>
+                        </li>
+                        <li>Average Achievement Earned Percent - {{app_overview_details['average_achivement_percent']|round(2)}}%</li>
+                        <li>Hardest Achievement - 
+                            <ul>
+                                <li>Title - {{hardest_achievement['achievement_title']}}</li>
+                                <li>Description - {{hardest_achievement['achievement_description']}}</li>
+                                <li>Cosmos/Source Percent - {{hardest_achievement['cosmos_percent']|round(2)}}%/{{hardest_achievement['source_percent']|round(2)}}%</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <span>{{ app_data['app_description'] }}</span>
+                </div>
+                <div class="app-screenshots">
+                </div>
             </div>
             <div class="app-achievements">
                 <div>

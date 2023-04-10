@@ -145,11 +145,11 @@ def app_route(app_id):
                 except Exception as e:
                     print(e)
         cursor.execute(
-            'SELECT * FROM Connections_Mapping WHERE app_id = %s', [app_id])
-        mapping = cursor.fetchone()
+            'SELECT * FROM App_Data WHERE app_id = %s', [app_id])
+        app_Data = cursor.fetchone()
         source_id = ''
-        if mapping:
-            source_id = mapping['appid']
+        if app_Data:
+            source_id = app_Data['source_id']
         else:
             return 'App Not Found'
         api_key = os.getenv('STEAM_API_KEY')
@@ -159,7 +159,7 @@ def app_route(app_id):
         achievement_percentages = requests.get(achievement_percentages_url).json()[
             'achievementpercentages']['achievements']
         for achievement in game_schema['game']['availableGameStats']['achievements']:
-            achivement_id = uuid.uuid4().hex
+            achievement_id = uuid.uuid4().hex
             achievement_title = achievement.get('displayName')
             achievement_description = achievement.get('description')
             if not achievement_description:
@@ -177,11 +177,11 @@ def app_route(app_id):
                 if achievement_percent['name'] == achievement['name']:
                     source_percent = achievement_percent['percent']
             cursor.execute('INSERT INTO App_Achievement_Data (app_id,achievement_id,achievement_title,achievement_description,$ref_art,hidden,cosmos_percent,source_percent) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
-                           (app_id, achivement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
+                           (app_id, achievement_id, achievement_title, achievement_description, art, hidden, cosmos_percent, source_percent))
             mysql.connection.commit()
             achievement_data.append({
                 'app_id': app_id,
-                'achievement_id': achivement_id,
+                'achievement_id': achievement_id,
                 'achievement_title': achievement_title,
                 'achievement_description': achievement_description,
                 'art': art,
@@ -190,7 +190,30 @@ def app_route(app_id):
                 'source_percent': source_percent,
                 'source_system': 'Steam',
             })
-    return render_template('app.html', authenticated=session.get('loggedin'), app_achievement_data=achievement_data)
+    min_percent = -1
+    hardest_achievement = dict()
+    achievement_percent_total = 0
+    achievement_hidden_total = 0
+    for achievement in achievement_data:
+        achievement_percent_total += achievement['source_percent']
+        if achievement['hidden']:
+            achievement_hidden_total += 1
+        if min_percent == -1:
+            min_percent = achievement['source_percent']
+            hardest_achievement = achievement
+        elif achievement['source_percent'] < min_percent:
+            min_percent = achievement['source_percent']
+            hardest_achievement = achievement
+    if len(achievement_data) > 0: 
+        achievement_percent_total = achievement_percent_total/len(achievement_data)
+    else:
+        achievement_percent_total = 0
+    app_overview_details = {
+        'average_achivement_percent': achievement_percent_total,
+        'hidden_total': achievement_hidden_total
+    }
+
+    return render_template('app.html', authenticated=session.get('loggedin'), app_data=app_data, app_achievement_data=achievement_data, hardest_achievement=hardest_achievement, app_overview_details=app_overview_details)
 
 
 @app.route("/steam_auth")
