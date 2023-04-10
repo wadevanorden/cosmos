@@ -25,16 +25,16 @@
                                 <li>Earned/Remaining - </li>
                             </ul>
                         </li>
-                        <li>Average Achievement Earned Percent - {{app_overview_details['average_achivement_percent']|round(2)}}%</li>
+                        <li>Average Achievement Earned Percent - {{app_overview_details['average_achivement_percent']|round(3)}}%</li>
                         <li>Most Difficult Achievement - 
                             <ul>
                                 <li>Title - {{hardest_achievement['achievement_title']}}</li>
                                 <li>Description - {{hardest_achievement['achievement_description']}}</li>
-                                <li>Cosmos/Source Percent - {{hardest_achievement['cosmos_percent']|round(2)}}%/{{hardest_achievement['source_percent']|round(2)}}%</li>
+                                <li>Cosmos/Source Percent - {{hardest_achievement['cosmos_percent']|round(3)}}%/{{hardest_achievement['source_percent']|round(3)}}%</li>
                             </ul>
                         </li>
                         <li>100% Difficulty Scale -
-                            {% set app_difficulty = app_overview_details['app_difficulty']|round(2)%}
+                            {% set app_difficulty = app_overview_details['app_difficulty']|round(3)%}
                             <div class="difficulty-scale">
                                 {% if app_difficulty < 87 %}
                                     <div style="left:{{app_difficulty}}%;">
