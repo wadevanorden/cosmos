@@ -223,7 +223,7 @@ main {
   font-size: 32px;
   font-family: 'Kanit';
   align-items: center;
-  justify-content: center;
+  padding-left: 5%;
 }
 .app-details {
   display: grid;
